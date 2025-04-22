@@ -1,3 +1,12 @@
+/*
+
+This code is part of a project that implements a simple health monitoring system using
+machine learning models (Logistic Regression, Decision Tree, and KNN) on an STM32 microcontroller using FreeRTOS.
+
+Google Colab link for models: https://colab.research.google.com/drive/1ZQqohtJSYoM6jttgKan2qIDlMB0ZFQ_j?usp=sharing
+
+*/
+
 /* USER CODE BEGIN Header */
 /**
  ******************************************************************************
@@ -22,7 +31,6 @@
 #include "task.h"
 #include "main.h"
 #include "cmsis_os.h"
-// #include "usart.h"
 #include <stdio.h>
 #include <math.h>
 #include <float.h>
@@ -181,6 +189,7 @@ void MX_FREERTOS_Init(void)
 	osThreadDef(LED3, LED3_init, osPriorityNormal, 0, 128);
 	LED3Handle = osThreadCreate(osThread(LED3), NULL);
 
+	/* definition and creation of Inferencing */
 	osThreadDef(Inferencing, InferencingTask, osPriorityHigh, 0, 256);
 	InferencingHandle = osThreadCreate(osThread(Inferencing), NULL);
 
@@ -244,11 +253,18 @@ void InferencingTask(void const *argument)
 	{
 		if (xSemaphoreTake(buttonSemaphore, portMAX_DELAY) == pdTRUE)
 		{
+			// Display Input Features
+			snprintf(msg, sizeof(msg), "Sample Data:\r\n");
+			HAL_UART_Transmit(&huart3, (uint8_t *)msg, strlen(msg), HAL_MAX_DELAY);
+			snprintf(msg, sizeof(msg), "Systolic: 130, Diastolic: 75, Temperature: 37\r\n");
+			HAL_UART_Transmit(&huart3, (uint8_t *)msg, strlen(msg), HAL_MAX_DELAY);
+
 			// Choose which model to run: Logistic Regression, Decision Tree or KNN
 			int predicted_class_dt = predict_dt(sample_features);
 			// Map the prediction to a risk level string and send it via UART
 			snprintf(msg, sizeof(msg), "DT Prediction: Class %d (%s)\r\n", predicted_class_dt, risk_levels[predicted_class_dt]);
 			HAL_UART_Transmit(&huart3, (uint8_t *)msg, strlen(msg), HAL_MAX_DELAY);
+			osDelay(1000);
 
 			int predicted_class_lr = predict_lr(sample_features);
 			// Map the prediction to a risk level string and send it via UART
@@ -258,7 +274,7 @@ void InferencingTask(void const *argument)
 
 			int predicted_class_knn = predict_knn(sample_features);
 			// Map the prediction to a risk level string and send it via UART
-			snprintf(msg, sizeof(msg), "KNN Prediction: Class %d (%s)\r\n", predicted_class_knn, risk_levels[predicted_class_knn]);
+			snprintf(msg, sizeof(msg), "KNN Prediction: Class %d (%s)\r\n\r\n", predicted_class_knn, risk_levels[predicted_class_knn]);
 			HAL_UART_Transmit(&huart3, (uint8_t *)msg, strlen(msg), HAL_MAX_DELAY);
 			osDelay(1000);
 
@@ -448,7 +464,6 @@ float euclidean_distance(float *v1, float *v2, int length)
 	return sqrtf(sum);
 }
 
-/* Private application code --------------------------------------------------*/
-/* USER CODE BEGIN Application */
+/* USER CODE BEGIN 0 */
 
-/* USER CODE END Application */
+/* USER CODE END 0 */
