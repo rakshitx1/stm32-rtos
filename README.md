@@ -1,6 +1,6 @@
 # Embedded Medical Inference System (STM32 + FreeRTOS)
 
-This project implements a basic health risk classification system on an STM32 microcontroller using FreeRTOS. It supports three machine learning models—**Decision Tree**, **Logistic Regression**, and **K-Nearest Neighbors (KNN)**—to classify physiological measurements into predefined risk levels: **Low**, **Medium**, and **High**.
+This project implements a basic health risk classification system on an STM32 microcontroller using FreeRTOS. It supports three machine learning models—**Decision Tree**, **Logistic Regression**, and **K-Nearest Neighbors (KNN)** to classify physiological measurements into predefined risk levels: **Low**, **Medium**, and **High**.
 
 ## Features
 
